@@ -54,12 +54,30 @@ loss_function = keras.losses.MeanSquaredError()
 model.compile(optimizer, loss_function)
 
 start = time.time()
-
-hist = model.fit(w_default, np.array(l_35),  epochs = 2000, verbose = 0)
+with tf.device("/gpu:0"):
+    hist = model.fit(w_default, np.array(l_35),  epochs = 2000, verbose = 0)
 
 end = time.time()
 
-sys.stdout.write('Temps :')
+sys.stdout.write('Temps GPU:')
 sys.stdout.write(str(end-start))
 sys.stdout.write('Loss :')
 sys.stdout.write(str(hist.history['loss'][-1]))
+
+
+model = create_model()
+optimizer = keras.optimizers.Adam(learning_rate=0.01)
+loss_function = keras.losses.MeanSquaredError()
+model.compile(optimizer, loss_function)
+
+start = time.time()
+with tf.device("/cpu:0"):
+    hist = model.fit(w_default, np.array(l_35),  epochs = 2000, verbose = 0)
+
+end = time.time()
+
+sys.stdout.write('Temps CPU :')
+sys.stdout.write(str(end-start))
+sys.stdout.write('Loss :')
+sys.stdout.write(str(hist.history['loss'][-1]))
+
