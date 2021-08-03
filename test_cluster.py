@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers 
 import random
+import time
 
 
 
@@ -51,6 +52,14 @@ model = create_model()
 optimizer = keras.optimizers.Adam(learning_rate=0.01)
 loss_function = keras.losses.MeanSquaredError()
 model.compile(optimizer, loss_function)
-hist = model.fit(w_default, np.array(l_35),  epochs = 200, verbose = 0)
 
+start = time.time()
+
+hist = model.fit(w_default, np.array(l_35),  epochs = 2000, verbose = 0)
+
+end = time.time()
+
+sys.stdout.write('Temps :')
+sys.stdout.write(str(end-start))
+sys.stdout.write('Loss :')
 sys.stdout.write(str(hist.history['loss'][-1]))
