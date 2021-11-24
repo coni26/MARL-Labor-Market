@@ -74,6 +74,7 @@ def create_model():
     return keras.Model(inputs=inputs, outputs=action)
 
   
+# These two functions just renormalize the gamma to put it in the same range as the other parameters of the neural network
 def update_gamma(gamma):
     return (gamma - 0.945) * 100
   
