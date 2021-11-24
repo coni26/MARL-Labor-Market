@@ -73,7 +73,7 @@ class environment:
 num_actions = 2
 
 def create_model():
-    inputs = layers.Input(shape=(3,))
+    inputs = layers.Input(shape=(2,))
     
     layer0 = layers.Dense(16, activation="sigmoid", name='layer0')(inputs)
     layer01 = layers.Dense(16, activation="sigmoid", name='layer01')(layer0)
