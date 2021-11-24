@@ -72,8 +72,6 @@ def create_model():
     action = layers.Concatenate(name='action')([action_0, action_1])
 
     return keras.Model(inputs=inputs, outputs=action)
-  
-  
 
   
 def update_gamma(gamma):
@@ -111,8 +109,6 @@ loss_function = keras.losses.MeanSquaredError()
 env = environment(unemployment_salary)
 env.dec_eps = 0.999998
 
-sum_grads = None
-
 batch_size = 1024
 update_after_actions = 4
 
@@ -126,8 +122,6 @@ frame_count = 0
 
 max_memory_length = 10000
 
-c_vals = np.linspace(1,3,21)
-
 prec = time.time()
 for ep in range(1000000):
     gamma = np.random.rand() * 0.117 + 0.875
@@ -139,9 +133,6 @@ for ep in range(1000000):
         print('Temps :', time.time() - prec)
         prec = time.time()
         
-        
-    cum_rewards = 0
-    cum_loss = 0
     agent = Agent(unemployment_salary)
     
     done = False
