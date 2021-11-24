@@ -9,6 +9,10 @@ from quantecon.distributions import BetaBinomial
 plt.rcParams["figure.figsize"] = (11, 5)
 
 
+##################
+### Parameters ###
+##################
+
 unemployment_salary = 2
 gamma = 0.95
 
