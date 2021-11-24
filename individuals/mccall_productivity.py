@@ -130,9 +130,6 @@ frame_count = 0
 
 max_memory_length = 10000
 
-c_vals = np.linspace(1,3,21)
-
-prec = time.time()
 for ep in range(100000):
     
     if ep % 5000 == 0:
