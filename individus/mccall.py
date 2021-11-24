@@ -180,17 +180,18 @@ for ep in range(1000000):
             
 
         salary = next_salary
-    if len(done_history) > max_memory_length:
+        
+    if len(done_history) > max_memory_length: # Delete from the history
         done_history = done_history[-max_memory_length:]
         action_history = action_history[-max_memory_length:]
         rewards_history = rewards_history[-max_memory_length:]
         state_next_history = state_next_history[-max_memory_length:]
         state_history = state_history[-max_memory_length:]
         
-    if ep % update_target == 0:
+    if ep % update_target == 0: # Uptdate of target model (Double DQN)
         model_target.set_weights(model.get_weights())
         
-    if ep%5000 == 0:
+    if ep % 5000 == 0:
         fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(17,5))
         state_tensor = tf.convert_to_tensor(np.array([[update_gamma(0.90)] * len(w_default), w_default, [2] * len(w_default)]).T)
         action_probs = model_target(state_tensor, training=False)
