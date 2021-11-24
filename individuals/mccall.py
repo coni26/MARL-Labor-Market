@@ -1,3 +1,14 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import collections
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers 
+import quantecon as qe
+from quantecon.distributions import BetaBinomial
+plt.rcParams["figure.figsize"] = (11, 5)
+
+
 unemployment_salary = 2
 gamma = 0.95
 
@@ -15,7 +26,6 @@ def u(c, σ=1.3):
 class Agent:
     
     def __init__(self, unemployment_salary):
-        self.prod = np.random.choice(w_default, p=q_default)  
         self.state = 0
         self.salary = unemployment_salary
         
@@ -84,7 +94,7 @@ def downdate_gamma(gamma):
   
 @tf.function
 def maj_model(action_sample, state_sample, updated_q_values):
-    masks = tf.one_hot(action_sample, num_actions)
+    masks = tf.one_hot(action_sample, num_actions) # Create a mask to know which action update
 
     with tf.GradientTape() as tape:
         q_values = model(state_sample)
@@ -123,7 +133,6 @@ frame_count = 0
 
 max_memory_length = 10000
 
-prec = time.time()
 for ep in range(1000000):
     gamma = np.random.rand() * 0.117 + 0.875
     unemployment_salary = np.random.rand() * 2.5 + 0.8
@@ -131,8 +140,7 @@ for ep in range(1000000):
     if ep % 5000 == 0:
         print('________________________________________________________________')
         print('_____________________________',ep,'_____________________________', env.eps)
-        print('Temps :', time.time() - prec)
-        prec = time.time()
+
         
     agent = Agent(unemployment_salary)
     
