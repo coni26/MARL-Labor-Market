@@ -108,7 +108,6 @@ optimizer = keras.optimizers.Adam(learning_rate=0.001)
 loss_function = keras.losses.MeanSquaredError()
 
 env = environment(unemployment_salary)
-#env.eps = 0.1
 env.dec_eps = 0.999998
 
 sum_grads = None
@@ -131,12 +130,7 @@ c_vals = np.linspace(1,3,21)
 prec = time.time()
 for ep in range(1000000):
     gamma = np.random.rand() * 0.117 + 0.875
-    #gamma = np.random.choice(np.linspace(0.90, 0.99, 10))
-    #gamma = np.random.choice([0.90,0.95,0.99])
-    #gamma = 0.95
-    #unemployment_salary = np.random.choice(c_vals)
     unemployment_salary = np.random.rand() * 2.5 + 0.8
-    #unemployment_salary = 2
     
     if ep % 5000 == 0:
         print('________________________________________________________________')
