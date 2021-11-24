@@ -9,6 +9,10 @@ from quantecon.distributions import BetaBinomial
 plt.rcParams["figure.figsize"] = (11, 5)
 
 
+##################
+### Parameters ###
+##################
+
 unemployment_salary = 2
 gamma = 0.95
 
@@ -111,10 +115,7 @@ optimizer = keras.optimizers.Adam(learning_rate=0.001)
 loss_function = keras.losses.MeanSquaredError()
 
 env = environment(unemployment_salary)
-#env.eps = 0.1
 env.dec_eps = 0.99999
-
-sum_grads = None
 
 batch_size = 1024
 update_after_actions = 4
@@ -129,8 +130,6 @@ frame_count = 0
 
 max_memory_length = 10000
 
-
-prec = time.time()
 for ep in range(100000):
     alpha = (np.random.rand() * 0.3) * (np.random.rand() > 0.1)
 
@@ -138,8 +137,7 @@ for ep in range(100000):
     if ep % 2000 == 0:
         print('________________________________________________________________')
         print('_____________________________',ep,'_____________________________', env.eps)
-        print('Temps :', time.time() - prec)
-        prec = time.time()
+
         
         
     cum_rewards = 0
