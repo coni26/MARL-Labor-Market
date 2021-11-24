@@ -96,8 +96,9 @@ def maj_model(action_sample, state_sample, updated_q_values):
     optimizer.apply_gradients(zip(grads, model.trainable_variables))  
     
     
-### entrainement
-j_ = 0
+######################    
+### Model training ###
+######################
 
 model = create_model()
 model_target = create_model()
