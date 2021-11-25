@@ -12,6 +12,8 @@ plt.rcParams["figure.figsize"] = (11, 5)
 ### In this version, the training is parallelized to increase the speed.
 ### Indeed, one of the time-consuming steps is to choose the action of the agents.
 ### We could have a single agent, but in this case we would create less training data than if we had several agents.
+### So, with several agents, we compute their decision at the same time, which does not increase the computation time, 
+### but allows to multiply the data.
 
 ##################
 ### Parameters ###
