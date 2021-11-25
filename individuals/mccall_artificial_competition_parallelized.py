@@ -97,14 +97,13 @@ class environment:
         self.eps = self.eps * self.dec_eps
         self.eps = max(self.min_eps, self.eps)
         
-        self.salaries = np.random.choice(w_default, p=q_default, size = nb_agents)
+        self.salaries = np.random.choice(w_default, p=q_default, size = nb_agents) # We draw the different salaries proposed for all agents, even if they are employed
             
         return self.salaries, rewards, self.time >= self.end
     
     def reset(self):
         self.time = 0
         self.salaries = np.random.choice(w_default, p=q_default, size = nb_agents)
-        self.nb_unem = nb_agents
         return self.salaries
         
     
@@ -179,7 +178,7 @@ def maj_s(state_sample, updated_q_values, action_sample):
 ### Model training ###
 ######################
 
-nb_agents = 10
+nb_agents = 10 # Number of parallelized agents
 
 
 model_q = create_model_q()
@@ -198,7 +197,7 @@ env = environment(unemployment_salary)
 env.dec_eps = 0.999992
 
 batch_size = 512
-update_after_actions = 1 # on met 1 car dans une frame, il y a bcp qui se passe
+update_after_actions = 1 # We take 1, because in one frame, we learn 10 datas. We could also take more than 1.
 
 action_history_q = []
 state_history_q = []
@@ -217,10 +216,6 @@ max_memory_length = 10000
 frame_count = 0
 
 for ep in range(500):
-    
-    if ep % 5 == 0:
-        print('_____________________________',ep,'_____________________________', env.eps)
-        #print(model.trainable_variables, env.eps)
         
     l_agents = [Agent(unemployment_salary) for i in range(nb_agents)]
     
@@ -249,19 +244,19 @@ for ep in range(500):
         
         next_salaries, rewards, done = env.step(actions, l_agents)
         
-        for i, agent in enumerate(l_agents):
-            if agent.prev_state:   
+        for i, agent in enumerate(l_agents): # Historization
+            if agent.prev_state: # Agent was employed, so his choice wan on Q
                 action_history_q.append(actions[i])
                 state_history_q.append([agent.prev_prod, unemployment_salary, agent.prev_salary])
-                if actions[i]:
+                if actions[i]: # He leaves is job
                     state_next_history_q.append([agent.prod, unemployment_salary, agent.salary])
                 else:
                     state_next_history_q.append([agent.prod, unemployment_salary, next_salaries[i]])
                 rewards_history_q.append(rewards[i])
-            else:
+            else: # Agent was unemployed, so his choice wan on S
                 action_history_s.append(actions[i])
                 state_history_s.append([agent.prod, unemployment_salary, salaries[i]])
-                if agent.state: # le cas où il est accepté
+                if agent.state: # If he is accepted
                     agent_state_history_s.append(agent.state)
                     state_next_history_s.append([agent.prod, unemployment_salary, agent.salary])
                 else:
@@ -327,7 +322,8 @@ for ep in range(500):
         model_q_target.set_weights(model_q.get_weights())
         model_s_target.set_weights(model_s.get_weights())
     
-    if ep % 5==0:
+    if ep % 5 == 0: # Just visualization, not necessary
+        print('_____________________________',ep,'_____________________________', env.eps)
         for prod in [3.5]:
             state_tensor = tf.convert_to_tensor(np.array([[prod] * len(w_default), [unemployment_salary] * len(w_default), w_default]).T)
             action_probs = model_q(state_tensor, training=False)
