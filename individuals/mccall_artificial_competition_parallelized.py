@@ -9,6 +9,10 @@ from quantecon.distributions import BetaBinomial
 plt.rcParams["figure.figsize"] = (11, 5)
 
 
+### In this version, the training is parallelized to increase the speed.
+### Indeed, one of the time-consuming steps is to choose the action of the agents.
+### We could have a single agent, but in this case we would create less training data than if we had several agents.
+
 ##################
 ### Parameters ###
 ##################
@@ -18,7 +22,7 @@ gamma = 0.90
 
 application_cost = 0.5
 
-γ = 0.5
+γ = 0.5 # Competition parameter, probability of acceptance
 
 n = 300                                 
 w_min, w_max = 2, 5
@@ -34,20 +38,20 @@ def u(c, σ=1.3):
 class Agent:
     
     def __init__(self, unemployment_salary):
-        #self.prod = np.random.choice(w_default, p=q_default) 
-        self.prod = 2.5 + 2.5 * np.random.rand()
-        self.prev_prod = self.prod
-        self.state = 0
+        #self.prod = np.random.choice(w_default, p=q_default) # Choice of productivity distribution
+        self.prod = 2.5 + 2.5 * np.random.rand() # For better training, uniform distribution
+        self.prev_prod = self.prod # We have to keep previous productivity for historization
+        self.state = 0 
         self.prev_state = 0
-        self.salary = unemployment_salary
-        self.prev_salary = unemployment_salary
+        self.salary = unemployment_salary # We have to keep previous state for historization
+        self.prev_salary = unemployment_salary # We have to keep previous salary for historization
         
         
 class environment:
     
     def __init__(self, unemployment_salary, dec_eps = 0.99997, γ=γ):
         self.time = 0
-        self.end = 400
+        self.end = 400 # Number of frames in one episode 
         self.eps = 1
         self.min_eps = 0.1
         self.dec_eps = dec_eps
@@ -61,29 +65,29 @@ class environment:
         rewards = [0] * len(l_agents)
         
         for i, agent in enumerate(l_agents):
-            agent.prev_state = agent.state
+            agent.prev_state = agent.state # We keep in memory previous parameters
             agent.prev_prod = agent.prod
             agent.prev_salary = agent.salary
-            if agent.state: # l'agent avait un emploi
-                if choices[i]: # il garde son emploi
+            if agent.state: # Agent had a job
+                if choices[i]: # He keep his job
                     rewards[i] = u(agent.salary)
-                    agent.prod += 0.01
-                    agent.prod = min(5, agent.prod)
-                else: # il quitte son emploi
+                    agent.prod += 0.01 # His productivity increases
+                    agent.prod = min(5, agent.prod) # Productivity is capped
+                else: # He leaves his job
                     rewards[i] = u(unemployment_salary)
                     agent.state = 0
                     agent.salary = unemployment_salary
-            else: # l'agent n'avait pas d'emploi
+            else: # Agent was unemployed
                 if choices[i]: 
-                    if agent.prod >= self.salaries[i] and np.random.rand() < self.γ:
+                    if agent.prod >= self.salaries[i] and np.random.rand() < self.γ: # He gets the job
                         rewards[i] = u(self.salaries[i] - application_cost)
-                        agent.salary = self.salaries[i]
-                        agent.state = 1
-                    else:
+                        agent.salary = self.salaries[i] 
+                        agent.state = 1 
+                    else: # He is rejected
                         rewards[i] = u(self.unemployment_salary - application_cost)
-                        agent.prod -= 0.01
-                        agent.prod = max(2, agent.prod)
-                else: 
+                        agent.prod -= 0.01 # His productivity decreases
+                        agent.prod = max(2, agent.prod) # Productivity is capped
+                else: # He did not apply
                     rewards[i] = u(self.unemployment_salary)
                     agent.prod -= 0.01
                     agent.prod = max(2, agent.prod)
