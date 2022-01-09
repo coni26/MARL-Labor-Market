@@ -31,6 +31,7 @@ class Agent:
     def __init__(self, unemployment_salary):
         self.state = 0
         self.salary = unemployment_salary
+        self.prod = 2.5 + 2.5 * np.random.rand()
         
         
 class environment:
